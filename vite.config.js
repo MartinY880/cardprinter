@@ -57,26 +57,10 @@ export default defineConfig({
           });
         },
       },
-      '/api/creds': {
-        target: 'http://127.0.0.1:8471',
-        changeOrigin: true,
-        rewrite: (path) => '/creds',
-      },
-      '/api/presets': {
-        target: 'http://127.0.0.1:8471',
-        changeOrigin: true,
-        rewrite: (path) => path.replace('/api/presets', '/presets'),
-      },
-      '/api/employees': {
-        target: 'http://127.0.0.1:8471',
-        changeOrigin: true,
-        rewrite: (path) => '/employees',
-      },
-      '/api/printlog': {
-        target: 'http://127.0.0.1:8471',
-        changeOrigin: true,
-        rewrite: (path) => '/printlog',
-      },
+      '/api/creds': { target: 'http://127.0.0.1:3000', changeOrigin: true },
+      '/api/presets': { target: 'http://127.0.0.1:3000', changeOrigin: true },
+      '/api/employees': { target: 'http://127.0.0.1:3000', changeOrigin: true },
+      '/api/printlog': { target: 'http://127.0.0.1:3000', changeOrigin: true },
     },
   },
 });

@@ -1,6 +1,12 @@
 # Stage 1: Build React frontend
 FROM node:20-alpine AS builder
 WORKDIR /build
+
+ARG VITE_LOGTO_ENDPOINT
+ARG VITE_LOGTO_APP_ID
+ENV VITE_LOGTO_ENDPOINT=$VITE_LOGTO_ENDPOINT
+ENV VITE_LOGTO_APP_ID=$VITE_LOGTO_APP_ID
+
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .

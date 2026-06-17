@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useLogto } from "@logto/react";
 import CardCanvas from "./components/CardCanvas.jsx";
 import DesignPanel from "./components/DesignPanel.jsx";
 import LayoutPanel from "./components/LayoutPanel.jsx";
@@ -13,12 +14,14 @@ const TABS = ["People", "Design", "Layout"];
 
 function useDebounce(fn, delay) {
   const timer = useRef(null);
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
   return useCallback(
     (...args) => {
       clearTimeout(timer.current);
-      timer.current = setTimeout(() => fn(...args), delay);
+      timer.current = setTimeout(() => fnRef.current(...args), delay);
     },
-    [fn, delay]
+    [delay]
   );
 }
 
@@ -378,6 +381,16 @@ export default function App() {
     reader.readAsText(file);
   };
 
+  const { signOut, getIdTokenClaims } = useLogto();
+  const [userName, setUserName] = useState("");
+  useEffect(() => {
+    getIdTokenClaims().then((claims) => {
+      if (claims?.name || claims?.username || claims?.email) {
+        setUserName(claims.name || claims.username || claims.email);
+      }
+    }).catch(() => {});
+  }, []);
+
   return (
     <div
       style={{
@@ -575,6 +588,34 @@ export default function App() {
             }}
           >
             {locked ? "🔒 Locked" : "🔓 Lock"}
+          </button>
+          {userName && (
+            <span style={{
+              fontSize: 11,
+              fontFamily: "'JetBrains Mono', monospace",
+              color: "#444",
+              padding: "4px 10px",
+              background: "#111",
+              borderRadius: 4,
+              border: "1px solid #1a1a1a",
+            }}>
+              {userName}
+            </span>
+          )}
+          <button
+            onClick={() => signOut(window.location.origin)}
+            style={{
+              padding: "5px 12px",
+              fontSize: 11,
+              fontWeight: 500,
+              background: "#111",
+              border: "1px solid #222",
+              borderRadius: 6,
+              color: "#666",
+              cursor: "pointer",
+            }}
+          >
+            Sign out
           </button>
         </div>
       </div>

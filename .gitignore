@@ -1,8 +1,10 @@
 node_modules/
 dist/
 .env
+.env.local
 *.log
 .DS_Store
+server/creds.json
 server/employees.json
 server/presets.json
 server/printlog.json

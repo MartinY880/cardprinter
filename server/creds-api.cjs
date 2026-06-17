@@ -279,6 +279,10 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (urlPath === "/health") {
+    res.writeHead(200); res.end(JSON.stringify({ ok: true })); return;
+  }
+
   if (urlPath.startsWith("/api/")) {
     res.writeHead(404); res.end(JSON.stringify({ error: "Not found" })); return;
   }

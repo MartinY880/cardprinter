@@ -324,6 +324,21 @@ export default function App() {
     loadImageFromFile(file, setLogoImg, "Logo", "logoDataUrl");
   };
 
+  const handleChangePin = () => {
+    const current = window.prompt("Enter current PIN:");
+    if (current === null) return;
+    if (current !== design.masterPin) { window.alert("Incorrect PIN."); return; }
+    const next = window.prompt("Enter new PIN (leave blank to remove PIN):");
+    if (next === null) return;
+    if (next === "") {
+      setDesign((d) => ({ ...d, masterPin: "" }));
+      return;
+    }
+    const confirm = window.prompt("Confirm new PIN:");
+    if (confirm !== next) { window.alert("PINs do not match."); return; }
+    setDesign((d) => ({ ...d, masterPin: next }));
+  };
+
   const handleLockToggle = () => {
     if (locked) {
       const pin = window.prompt("Enter master PIN to unlock:");
@@ -598,6 +613,23 @@ export default function App() {
             💾 Export
           </button>
           </>)}
+          {!locked && design.masterPin && (
+            <button
+              onClick={handleChangePin}
+              style={{
+                padding: "5px 12px",
+                fontSize: 11,
+                fontWeight: 500,
+                background: "#111",
+                border: "1px solid #222",
+                borderRadius: 6,
+                color: "#888",
+                cursor: "pointer",
+              }}
+            >
+              Change PIN
+            </button>
+          )}
           <button
             onClick={handleLockToggle}
             style={{

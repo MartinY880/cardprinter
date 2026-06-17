@@ -351,7 +351,11 @@ export default function App() {
   };
 
   const exportTemplate = () => {
-    const data = JSON.stringify({ design, elements }, null, 2);
+    const images = {
+      bgDataUrl: storage.get("bgDataUrl", null),
+      logoDataUrl: storage.get("logoDataUrl", null),
+    };
+    const data = JSON.stringify({ design, elements, images }, null, 2);
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -374,6 +378,26 @@ export default function App() {
           if (merged.masterPin) { setLocked(true); setActiveTab("People"); }
         }
         if (json.elements && typeof json.elements === "object") setElements({ ...DEFAULT_ELEMENTS, ...json.elements });
+        if (json.images) {
+          if (json.images.bgDataUrl) {
+            storage.set("bgDataUrl", json.images.bgDataUrl);
+            const img = new Image();
+            img.onload = () => setBgImg(img);
+            img.src = json.images.bgDataUrl;
+          } else {
+            storage.set("bgDataUrl", null);
+            setBgImg(null);
+          }
+          if (json.images.logoDataUrl) {
+            storage.set("logoDataUrl", json.images.logoDataUrl);
+            const img = new Image();
+            img.onload = () => setLogoImg(img);
+            img.src = json.images.logoDataUrl;
+          } else {
+            storage.set("logoDataUrl", null);
+            setLogoImg(null);
+          }
+        }
       } catch {
         // invalid JSON — ignore
       }

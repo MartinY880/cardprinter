@@ -1,0 +1,6 @@
+FROM node:20-alpine
+WORKDIR /app
+COPY creds-api.cjs ./
+ENV DATA_DIR=/data
+EXPOSE 8471
+CMD ["node", "creds-api.cjs"]

@@ -1,0 +1,47 @@
+version: "3.8"
+
+# Deploy to Portainer Swarm via:
+#   Stacks → Add stack → Upload → docker-stack.yml
+# Set the env vars in Portainer's "Environment variables" section before deploying.
+
+services:
+  frontend:
+    image: ${REGISTRY:-}card-design-studio-frontend:${TAG:-latest}
+    ports:
+      - "${PORT:-8470}:80"
+    networks:
+      - card-net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+      update_config:
+        order: start-first
+
+  api:
+    image: ${REGISTRY:-}card-design-studio-api:${TAG:-latest}
+    environment:
+      - DATA_DIR=/data
+      - GRAPH_TENANT_ID=${GRAPH_TENANT_ID:-}
+      - GRAPH_CLIENT_ID=${GRAPH_CLIENT_ID:-}
+      - GRAPH_CLIENT_SECRET=${GRAPH_CLIENT_SECRET:-}
+      - PDK_CLIENT_ID=${PDK_CLIENT_ID:-}
+      - PDK_CLIENT_SECRET=${PDK_CLIENT_SECRET:-}
+    volumes:
+      - api-data:/data
+    networks:
+      - card-net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+
+volumes:
+  api-data:
+
+networks:
+  card-net:
+    driver: overlay
+    attachable: true

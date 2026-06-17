@@ -164,6 +164,8 @@ const server = http.createServer((req, res) => {
   const raw = req.url || "/";
   const urlPath = raw.split("?")[0];
 
+  console.log(`${req.method} ${raw}`);
+
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");

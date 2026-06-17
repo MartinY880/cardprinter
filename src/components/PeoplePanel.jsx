@@ -1,8 +1,7 @@
 import { useState } from "react";
 import Section from "./controls/Section.jsx";
 import { parseCSV, deduplicateEmployees } from "../lib/csvParser.js";
-import { fetchGraphUsers, clearTokenCache } from "../lib/graphApi.js";
-import { clearPdkCache } from "../lib/pdkApi.js";
+import { fetchGraphUsers } from "../lib/graphApi.js";
 
 export default function PeoplePanel({
   employees,
@@ -12,9 +11,6 @@ export default function PeoplePanel({
   printLog,
   setPrintLog,
   graphCreds,
-  setGraphCreds,
-  pdkCreds,
-  setPdkCreds,
 }) {
   const [search, setSearch] = useState("");
   const [graphStatus, setGraphStatus] = useState("");
@@ -59,7 +55,7 @@ export default function PeoplePanel({
 
   const handleGraphPull = async () => {
     if (!graphCreds.tenantId || !graphCreds.clientId || !graphCreds.clientSecret) {
-      setGraphStatus("Fill in all three fields");
+      setGraphStatus("Credentials not configured on server");
       return;
     }
     setGraphStatus("Authenticating...");
@@ -356,43 +352,7 @@ export default function PeoplePanel({
       </Section>
 
       {/* Azure AD / Graph */}
-      <Section title="Azure AD / Graph" subtitle="app registration sync">
-        <div style={{ fontSize: 10, color: "#555", marginBottom: 8, lineHeight: 1.5 }}>
-          Create an <span style={{ color: "#888" }}>App Registration</span> in Azure Portal with
-          <span style={{ color: "#00d4aa" }}> User.Read.All</span> application permission + admin consent.
-        </div>
-        {[
-          { key: "tenantId", label: "Tenant ID", placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" },
-          { key: "clientId", label: "Client ID", placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" },
-          { key: "clientSecret", label: "Client Secret", placeholder: "your client secret value", secret: true },
-        ].map(({ key, label, placeholder, secret }) => (
-          <div key={key} style={{ marginBottom: 6 }}>
-            <label style={{ fontSize: 10, color: "#666", display: "block", marginBottom: 2 }}>
-              {label}
-            </label>
-            <input
-              type={secret ? "password" : "text"}
-              placeholder={placeholder}
-              value={graphCreds[key]}
-              onChange={(e) => {
-                clearTokenCache();
-                setGraphCreds((prev) => ({ ...prev, [key]: e.target.value }));
-              }}
-              style={{
-                width: "100%",
-                fontSize: 11,
-                fontFamily: "'JetBrains Mono', monospace",
-                background: "#111",
-                border: "1px solid #222",
-                borderRadius: 6,
-                color: "#aaa",
-                padding: "6px 8px",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
-        ))}
+      <Section title="Azure AD / Graph" subtitle="Entra ID sync" defaultOpen={true}>
         <button
           onClick={handleGraphPull}
           style={{
@@ -405,7 +365,6 @@ export default function PeoplePanel({
             borderRadius: 6,
             color: "#888",
             cursor: "pointer",
-            marginTop: 6,
           }}
         >
           ☁️ Pull All Users
@@ -414,7 +373,7 @@ export default function PeoplePanel({
           <div
             style={{
               fontSize: 10.5,
-              color: graphStatus.startsWith("Error") ? "#e94560" : "#00d4aa",
+              color: graphStatus.startsWith("Error") || graphStatus.startsWith("Credentials") ? "#e94560" : "#00d4aa",
               marginTop: 6,
               lineHeight: 1.4,
               wordBreak: "break-word",
@@ -423,45 +382,6 @@ export default function PeoplePanel({
             {graphStatus}
           </div>
         )}
-      </Section>
-
-      {/* PDK Access Control */}
-      <Section title="PDK Access Control" subtitle="card credential sync">
-        <div style={{ fontSize: 10, color: "#555", marginBottom: 8, lineHeight: 1.5 }}>
-          Enter your PDK <span style={{ color: "#888" }}>Client ID</span> and
-          <span style={{ color: "#888" }}> Client Secret</span> to assign card numbers after printing.
-        </div>
-        {[
-          { key: "pdkClientId", label: "Client ID", placeholder: "your PDK client ID" },
-          { key: "pdkClientSecret", label: "Client Secret", placeholder: "your PDK client secret", secret: true },
-        ].map(({ key, label, placeholder, secret }) => (
-          <div key={key} style={{ marginBottom: 6 }}>
-            <label style={{ fontSize: 10, color: "#666", display: "block", marginBottom: 2 }}>
-              {label}
-            </label>
-            <input
-              type={secret ? "password" : "text"}
-              placeholder={placeholder}
-              value={pdkCreds[key]}
-              onChange={(e) => {
-                clearPdkCache();
-                setPdkCreds((prev) => ({ ...prev, [key]: e.target.value }));
-              }}
-              style={{
-                width: "100%",
-                fontSize: 11,
-                fontFamily: "'JetBrains Mono', monospace",
-                background: "#111",
-                border: "1px solid #222",
-                borderRadius: 6,
-                color: "#aaa",
-                padding: "6px 8px",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
-        ))}
       </Section>
       </div>
     </div>

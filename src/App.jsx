@@ -633,9 +633,6 @@ export default function App() {
                 printLog={printLog}
                 setPrintLog={setPrintLog}
                 graphCreds={graphCreds}
-                setGraphCreds={setGraphCreds}
-                pdkCreds={pdkCreds}
-                setPdkCreds={setPdkCreds}
               />
             )}
             {activeTab === "Design" && !locked && (

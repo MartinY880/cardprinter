@@ -1,37 +1,23 @@
 version: "3.8"
 
-# Local development / test. For Portainer Swarm use docker-stack.yml.
+# Local dev/test. For Portainer Swarm use docker-stack.yml.
 
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  card-studio:
+    build: .
     ports:
-      - "8470:80"
-    networks:
-      - card-net
-    depends_on:
-      - api
-
-  api:
-    build:
-      context: ./server
-      dockerfile: ../Dockerfile.api
+      - "3000:3000"
     environment:
       - DATA_DIR=/data
+      - STATIC_DIR=/app/dist
+      - PORT=3000
       - GRAPH_TENANT_ID=${GRAPH_TENANT_ID:-}
       - GRAPH_CLIENT_ID=${GRAPH_CLIENT_ID:-}
       - GRAPH_CLIENT_SECRET=${GRAPH_CLIENT_SECRET:-}
       - PDK_CLIENT_ID=${PDK_CLIENT_ID:-}
       - PDK_CLIENT_SECRET=${PDK_CLIENT_SECRET:-}
     volumes:
-      - api-data:/data
-    networks:
-      - card-net
+      - card-studio-data:/data
 
 volumes:
-  api-data:
-
-networks:
-  card-net:
+  card-studio-data:

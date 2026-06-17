@@ -1,14 +1,18 @@
-# Stage 1: Build
+# Stage 1: Build React frontend
 FROM node:20-alpine AS builder
-WORKDIR /app
+WORKDIR /build
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve
-FROM nginx:alpine
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Stage 2: Runtime — Node.js serves static files + API + external proxies
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /build/dist ./dist
+COPY server/creds-api.cjs ./
+ENV DATA_DIR=/data
+ENV STATIC_DIR=/app/dist
+ENV PORT=3000
+EXPOSE 3000
+CMD ["node", "creds-api.cjs"]
